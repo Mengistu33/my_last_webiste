@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daballee Order Game - Educational Version</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      color: white;
+      position: relative;
+    }
+
+    .container {
+      max-width: 1000px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      z-index: 1;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .logo {
+      font-size: 3.5rem;
+      margin-bottom: 10px;
+      color: #FFD700;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      animation: pulse 2s infinite;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      margin-bottom: 20px;
+    }
+
+    .game-area {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 12px;
+      transition: transform 0.3s, background 0.3s;
+      cursor: pointer;
+    }
+
+    .row:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .box, .word, .check {
+      padding: 12px;
+      margin: 0 5px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .box {
+      background: #4682b4;
+      min-width: 50px;
+      font-size: 1.2rem;
+    }
+
+    .word {
+      background: #5a9bd4;
+      min-width: 150px;
+      flex-grow: 1;
+      font-size: 1.1rem;
+    }
+
+    .check {
+      background: #2e8b57;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .counter-area {
+      display: flex;
+      justify-content: center;
+      margin: 25px 0;
+    }
+
+    .counter {
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: white;
+      font-size: 2.5rem;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+      border: 5px solid rgba(255, 255, 255, 0.2);
+      animation: glow 1.5s infinite alternate;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: linear-gradient(to right, #FF416C, #FF4B2B);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 1.1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    button:nth-child(2) {
+      background: linear-gradient(to right, #1e3c72, #2a5298);
+    }
+
+    button:nth-child(3) {
+      background: linear-gradient(to right, #00b09b, #96c93d);
+    }
+
+    #result {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 15px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      transition: all 0.5s;
+    }
+
+    .instructions {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 25px;
+      font-size: 1.05rem;
+      line-height: 1.5;
+    }
+
+    .instructions h3 {
+      margin-bottom: 10px;
+      color: #FFD700;
+    }
+
+    .progress-bar {
+      height: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 5px;
+      margin: 20px 0;
+      overflow: hidden;
+    }
+
+    .progress {
+      height: 100%;
+      background: linear-gradient(to right, #FF416C, #FF4B2B);
+      width: 0%;
+      transition: width 0.5s;
+      border-radius: 5px;
+    }
+
+    footer {
+      margin-top: 30px;
+      text-align: center;
+      opacity: 0.8;
+      font-size: 0.9rem;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+      width: 90%;
+      max-width: 600px;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+      position: relative;
+      transform: translateY(-20px);
+      transition: transform 0.3s ease;
+    }
+
+    .modal.active .modal-content {
+      transform: translateY(0);
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 1.5rem;
+      color: white;
+      cursor: pointer;
+      background: none;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+    }
+
+    .close-modal:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .modal-title {
+      font-size: 2rem;
+      margin-bottom: 15px;
+      color: #FFD700;
+      text-align: center;
+    }
+
+    .modal-body {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .modal-image {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      height: 200px;
+      background-color: #2c3e50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      color: #FFD700;
+    }
+
+    /* Animations */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes glow {
+      from { box-shadow: 0 0 10px rgba(106, 17, 203, 0.7); }
+      to { box-shadow: 0 0 20px rgba(106, 17, 203, 1); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .logo {
+        font-size: 2.5rem;
+      }
+      
+      .counter {
+        width: 120px;
+        height: 120px;
+        font-size: 2rem;
+      }
+      
+      button {
+        padding: 12px 25px;
+        font-size: 1rem;
+      }
+      
+      .row {
+        display: flex;
+        gap: 10px;
+      }
+      
+      .word {
+        min-width: unset;
+        width: 100%;
+      }
+
+      .modal-content {
+        padding: 20px;
+      }
+
+      .modal-title {
+        font-size: 1.7rem;
+      }
+
+      .modal-body {
+        font-size: 1rem;
+      }
+
+      .modal-image {
+        height: 150px;
+        font-size: 3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <i class="fas fa-graduation-cap"></i>
+      </div>
+      <h1>Daballee Order Game</h1>
+      <p class="subtitle">Learn about Oromo culture while testing your timing skills!</p>
+    </header>
+
+    <div class="game-area">
+      <div class="row" onclick="showInfo(1)">
+        <div class="box">1</div>
+        <div class="word">Daballee</div>
+        <div class="check" id="check1"></div>
+      </div>
+      <div class="row" onclick="showInfo(2)">
+        <div class="box">2</div>
+        <div class="word">Gaamee</div>
+        <div class="check" id="check2"></div>
+      </div>
+      <div class="row" onclick="showInfo(3)">
+        <div class="box">3</div>
+        <div class="word">Kuusaa</div>
+        <div class="check" id="check3"></div>
+      </div>
+      <div class="row" onclick="showInfo(4)">
+        <div class="box">4</div>
+        <div class="word">Raabaa</div>
+        <div class="check" id="check4"></div>
+      </div>
+      <div class="row" onclick="showInfo(5)">
+        <div class="box">5</div>
+        <div class="word">Gadaa</div>
+        <div class="check" id="check5"></div>
+      </div>
+      <div class="row" onclick="showInfo(6)">
+        <div class="box">6</div>
+        <div class="word">Yuuba</div>
+        <div class="check" id="check6"></div>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress" id="progress"></div>
+      </div>
+
+      <div class="counter-area">
+        <div class="counter" id="counter">0.0</div>
+      </div>
+
+      <div class="controls">
+        <button onclick="startGame()">
+          <i class="fas fa-play"></i> Start
+        </button>
+        <button onclick="stopGame()">
+          <i class="fas fa-stop"></i> Stop
+        </button>
+        <button onclick="resetGame()">
+          <i class="fas fa-redo"></i> Reset
+        </button>
+      </div>
+
+      <div id="result"></div>
+    </div>
+
+    <div class="instructions">
+      <h3>How to Play & Learn</h3>
+      <p>Click Start to begin the counter. When the counter is close to the next number (1-6), click Stop to lock it in. Get all 6 numbers in order to win! Click on any term to learn about its cultural significance. Your progress is saved between sessions.</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>Daballee Educational Game &copy; 2023 | Learn about Oromo culture</p>
+  </footer>
+
+  <!-- Information Modal -->
+  <div class="modal" id="info-modal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal()">
+        <i class="fas fa-times"></i>
+      </button>
+      <h2 class="modal-title" id="modal-title">Term Information</h2>
+      <div class="modal-image" id="modal-image">
+        <i class="fas fa-landmark"></i>
+      </div>
+      <div class="modal-body" id="modal-body">
+        Click on any term to learn about its significance in Oromo culture.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let interval;
+    let value = 0.0;
+    let direction = 1;
+    let expected = 1;
+    let gameOver = false;
+    
+    // Educational content for each term
+    const termInfo = {
+      1: {
+        title: "Daballee (Age 0-8)",
+        content: "<p>The first stage in the Gadaa system where children are introduced to basic social values and norms. During this period, children stay with their families and learn through observation and participation in household activities.</p><p>This stage focuses on nurturing and protection, establishing the foundation for the child's future development within the Oromo social structure.</p>",
+        icon: "fas fa-baby"
+      },
+      2: {
+        title: "Gaammee",
+        content: "Age: 8 – 16 years.Role: Boys begin herding cattle and helping in family duties. They start learning Oromo values, oral traditions, and history. They also form age-based peer groups, strengthening bonds for the future.",
+        icon: "fas fa-users"
+      },
+      3: {
+        title: "Kuusaa",
+        content: "Age: 24 – 32 years.Role: This is the stage of military service. Members train in warfare, hunting, and defense of the community. They are not yet decision-makers but serve as protectors",
+        icon: "fas fa-circle"
+      },
+      4: {
+        title: "Raabaa",
+        content: "Age: 32 – 40 years.Role: Men take on more serious military duties and participate in large expeditions. They act as assistants to the ruling Gadaa class and prepare for leadership",
+        icon: "fas fa-monument"
+      },
+      5: {
+        title: "Gadaa",
+        content: "Age: 40 – 48 years.Role: This is the central governing stage. Members of this class become leaders, lawmakers, and administrators of the Oromo people for an 8-year term. The Gadaa officials (Abba Gadaa and council) are elected from this group. They handle law, justice, conflict resolution, rituals, and foreign relations.",
+        icon: "fas fa-user-tie"
+      },
+      6: {
+        title: "Yuuba",
+        content: "Age: 48 – 56 years.Role: Retired leaders who now serve as advisors and custodians of wisdom. They help guide younger generations and maintain moral authority.",
+        icon: "fas fa-chess-board"
+      }
+    };
+
+    // Function to show information about a term in a modal
+    function showInfo(termId) {
+      const info = termInfo[termId];
+      document.getElementById('modal-title').textContent = info.title;
+      document.getElementById('modal-body').innerHTML = info.content;
+      document.getElementById('modal-image').innerHTML = `<i class="${info.icon}"></i>`;
+      
+      const modal = document.getElementById('info-modal');
+      modal.classList.add('active');
+    }
+
+    // Function to close the modal
+    function closeModal() {
+      const modal = document.getElementById('info-modal');
+      modal.classList.remove('active');
+    }
+
+    // Close modal when clicking outside the content
+    window.addEventListener('click', function(event) {
+      const modal = document.getElementById('info-modal');
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+
+    // Function to update checkmarks based on expected value
+    function updateCheckmarks() {
+      // Clear all checkmarks first
+      for (let i = 1; i <= 6; i++) {
+        document.getElementById("check" + i).textContent = "";
+      }
+      
+      // Set checkmarks for completed items
+      for (let i = 1; i < expected; i++) {
+        document.getElementById("check" + i).textContent = "✔";
+      }
+      
+      // Update progress bar
+      document.getElementById("progress").style.width = ((expected - 1) / 6 * 100) + '%';
+    }
+
+    // Restore saved progress
+    window.onload = function () {
+      let savedExpected = localStorage.getItem("expected");
+      if (savedExpected) {
+        expected = parseInt(savedExpected);
+        updateCheckmarks();
+        value = expected - 1; // start from last achieved
+        document.getElementById("counter").textContent = value.toFixed(1);
+      }
+    };
+
+    function startGame() {
+      if (gameOver) return;
+      clearInterval(interval);
+
+      interval = setInterval(() => {
+        let step = (Math.random() * 0.2 + 0.1).toFixed(1); // random speed
+        value = parseFloat((value + direction * step).toFixed(1));
+
+        if (value >= 6.0) {
+          value = 6.0;
+          direction = -1;
+        } else if (value <= 0.0) {
+          value = 0.0;
+          direction = 1;
+        }
+
+        document.getElementById("counter").textContent = value.toFixed(1);
+      }, 100);
+    }
+
+    function stopGame() {
+      clearInterval(interval);
+      if (gameOver) return;
+
+      if (Math.abs(value - expected) < 0.15) {
+        document.getElementById("check" + expected).textContent = "✔";
+        expected++;
+        localStorage.setItem("expected", expected);
+        updateCheckmarks();
+
+        // Show information about the completed term
+        if (expected > 1 && expected <= 7) {
+          showInfo(expected - 1);
+        }
+
+        if (expected > 6) {
+          document.getElementById("result").innerHTML = "🎉 You Win! 🎉";
+          document.getElementById("result").style.color = "#FFD700";
+          document.getElementById("result").style.fontSize = "2.5rem";
+          localStorage.removeItem("expected"); // clear on full win
+          gameOver = true;
+        } else {
+          value = expected - 1; // restart from next target
+          document.getElementById("counter").textContent = value.toFixed(1);
+          document.getElementById("result").innerHTML = "Good job! Next target: " + expected;
+          document.getElementById("result").style.color = "#90EE90";
+          setTimeout(() => {
+            document.getElementById("result").innerHTML = "";
+          }, 2000);
+        }
+      } else {
+        document.getElementById("result").innerHTML = "❌ Wrong! Try again!";
+        document.getElementById("result").style.color = "#FF6B6B";
+        // Don't clear localStorage on wrong stop - just show message
+        gameOver = false; // Allow user to try again
+      }
+    }
+
+    function resetGame() {
+      clearInterval(interval);
+      gameOver = false;
+      direction = 1;
+
+      // Get the current progress from localStorage
+      let savedExpected = localStorage.getItem("expected");
+      expected = savedExpected ? parseInt(savedExpected) : 1;
+
+      // reset counter to current expected progress
+      value = expected - 1;
+      document.getElementById("counter").textContent = value.toFixed(1);
+      document.getElementById("result").innerHTML = "";
+      document.getElementById("result").style.color = "white";
+
+      // Update checkmarks based on the current expected value
+      updateCheckmarks();
+    }
+  </script>
+</body>
+</html>
